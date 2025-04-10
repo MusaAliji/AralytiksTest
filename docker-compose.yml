@@ -1,0 +1,27 @@
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim-faststart
+    container_name: oracle_db
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=StrongPassword123  # Explicitly set SYS/SYSTEM password
+      - ORACLE_DATABASE=Application       # Database name
+      - APP_USER=AralytiKs               # Application user
+      - APP_USER_PASSWORD=StrongPassword123   # Application user password
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "sqlplus", "-L", "AralytiKs/StrongPassword123@//localhost:1521/Application", "select 1 from dual"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app-network
+
+volumes:
+  oracle-data:
+
+networks:
+  app-network:
+    driver: bridge
